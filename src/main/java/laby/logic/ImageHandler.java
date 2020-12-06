@@ -7,7 +7,7 @@ import java.awt.image.MemoryImageSource;
 import java.awt.image.PixelGrabber;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
+import javafx.scene.control.Label;
 
 /**
  *
@@ -18,14 +18,17 @@ public class ImageHandler {
     int width;
     int height;
     int[] pixels;
+    int[][] map;
+    Label info;
     
-    public ImageHandler(String path) {
-        doFile(path);  
+    public ImageHandler(String path, Label info) {
+        this.info = info;
+        readFile(path);  
     }
     
-     private void doFile(String path) {
+    private void readFile(String path) {
         try {
-            System.out.println("Käsitellään kuvaa...");
+            info.setText("Käsitellään kuvaa...");
             image = ImageIO.read(new File(path));
             width = image.getWidth();
             height = image.getHeight();
@@ -34,28 +37,46 @@ public class ImageHandler {
             PixelGrabber pg = new PixelGrabber(image, 0, 0, width, height, pixels, 0, width);
             pg.grabPixels();
             
-            int[][] map = writeArray(pixels, width, height);
-            
-            PathFinder pf = new PathFinder(map);
-            map = pf.getMapWithPath();
-            System.out.println("Kuva luettu.");
-            int[] data = writeArrayToTable(map);
-            mapToImage("images/output.bmp", width, height, data); 
-            System.out.println("Valmis! Katso tiedosto output.bmp kansiossa 'images'");
+            map = writeArray(pixels, width, height);
+            info.setText("Kuva luettu.");
+           
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
+     
+    public void doFile(int[][] modifiedMap) {
+        try {
+            this.map = modifiedMap;
+            PathFinder pf = new PathFinder(map, info);
+            map = pf.getMapWithPath();
+            if (map == null) return;
+            int[] data = writeArrayToTable(map);
+            mapToImage("images/output.bmp", width, height, data);
+            info.setText("Valmis!");
+        } catch (Exception e) {
+            info.setText("Error: " + e.getMessage());
+        }
+    }
+     
+    public int[][] getImageAsMap() {
+        return map;
+    }
     
-    private void mapToImage(String path, int width, int height, int[] data) throws IOException {
-        MemoryImageSource mi = new MemoryImageSource(width, height, data, 0, width);
-        Image im = Toolkit.getDefaultToolkit().createImage(mi);
-        BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        bi.getGraphics().drawImage(im, 0, 0, null);
-        ImageIO.write(bi, "bmp", new File(path));
+
+    private void mapToImage(String path, int width, int height, int[] data) {
+        try {
+            MemoryImageSource mi = new MemoryImageSource(width, height, data, 0, width);
+            Image im = Toolkit.getDefaultToolkit().createImage(mi);
+            BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            bi.getGraphics().drawImage(im, 0, 0, null);
+            ImageIO.write(bi, "bmp", new File(path));
+        } catch (Exception e) {
+            info.setText("Error: " + e.getMessage());
+        }
     }
 
-    private int[][] writeArray(int[] data, int width, int height) throws IOException {
+    private int[][] writeArray(int[] data, int width, int height) {
         int[][] map = new int[height][width];
         int xy = 0;
         for (int y = 0; y < height; y++) {

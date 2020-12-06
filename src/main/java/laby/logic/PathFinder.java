@@ -3,6 +3,7 @@ package laby.logic;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import javafx.scene.control.Label;
 
 /**
  *
@@ -18,27 +19,29 @@ public class PathFinder {
     int white = -1;
     int green = -16711936;
     int limit = -856619;
+    Label info;
     
-    public PathFinder(int[][] map) {
+    public PathFinder(int[][] map, Label info) {
         this.map = map;
         this.height = map.length;
         this.width = map[0].length;
+        this.info = info;
     }
     
     public int[][] getMapWithPath() {
         Pair[] fromto = findAB();
         if (fromto[0] == null) {
-            System.out.println("Ei löydetty alku- ja loppupisteitä");
+            info.setText("Ei löydetty alku- ja loppupisteitä");
+            return null;
         }
         System.out.println("LÄHTÖ: " + fromto[0]);
         System.out.println("MAALI: " + fromto[1]);
         int routeLength = seekShortest(fromto[0], fromto[1]);
-        System.out.println("Lyhin reitti sinisestä punaiseen on: " + routeLength + " pikseliä.");
-        if (routeLength == 0) System.out.println("Reittiä löytynyt. Kokeile muuttaa seinien läpäisevyyttä tai merkitse pisteet uudelleen.");
+        info.setText("Lyhin reitti on: " + routeLength + " pikseliä.");
+        if (routeLength == 0) info.setText("Reittiä löytynyt. \nKokeile muuttaa seinien läpäisevyyttä \ntai merkitse pisteet uudelleen.");
         
         return map;
     }
-    
     
     private Pair[] findAB() {
         Pair[] AB = new Pair[2];

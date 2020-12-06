@@ -1,6 +1,9 @@
 plugins {
-    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
 }
+
+apply plugin: 'java'
+apply plugin: 'application'
 
 jar {
     manifest {
@@ -8,8 +11,15 @@ jar {
     }
 }
 
+mainClassName = 'laby.ui.Main'
+
 application {
     mainClass = 'laby/ui/Main'
+}
+
+javafx {
+    version = '11'
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
 run {
