@@ -30,7 +30,6 @@ public class PathFinder {
     }
     
     public int[][] getMapWithPath() {
-        System.out.println("Etsitään reittiä vahvuudella " + limit);
         Pair[] fromto = findAB();
         if (fromto[0] == null || fromto[1] == null) {
             info.setText("Ei löydetty alku- ja loppupisteitä");

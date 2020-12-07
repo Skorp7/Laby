@@ -134,7 +134,7 @@ public class App extends Application {
     public void start(Stage stage){
         stage.setTitle("Laby");
 
-        TextField filepath = new TextField("images/greg4.bmp");
+        TextField filepath = new TextField("images/empty.bmp");
         Button load = new Button("Lataa kuva");
         Button seek = new Button("Etsi reitti");
         Button reset = new Button("Nollaa");
@@ -182,6 +182,20 @@ public class App extends Application {
             Color color = selectedColor(toolSet);
             imgWriter.setColor(x, y, color);
             drawedPixs[y][x] = arrayColor(color);
+            if (color == Color.BLACK) {
+                imgWriter.setColor(x-1, y, color);
+                imgWriter.setColor(x, y-1, color);
+                imgWriter.setColor(x+1, y, color);
+                imgWriter.setColor(x, y+1, color);
+                imgWriter.setColor(x+1, y+1, color);
+                imgWriter.setColor(x-1, y-1, color);
+                drawedPixs[y-1][x] = arrayColor(color);
+                drawedPixs[y][x-1] = arrayColor(color);
+                drawedPixs[y+1][x] = arrayColor(color);
+                drawedPixs[y][x+1] = arrayColor(color);
+                drawedPixs[y+1][x+1] = arrayColor(color);
+                drawedPixs[y-1][x-1] = arrayColor(color);
+            }
         });
         
         BorderPane asettelu = new BorderPane();
@@ -235,7 +249,6 @@ public class App extends Application {
         
         thick.setOnMouseDragged((MouseEvent e) -> {
             thickness = (int) thick.getValue();
-            System.out.println("thick " + thickness);
         });
 
         stage.show();
