@@ -45,14 +45,15 @@ public class ImageHandler {
         }
     }
      
-    public void doFile(int[][] modifiedMap) {
+    public void doFile(int[][] modifiedMap, int thickness) {
         try {
             this.map = modifiedMap;
-            PathFinder pf = new PathFinder(map, info);
+            PathFinder pf = new PathFinder(map, info, thickness);
             map = pf.getMapWithPath();
             if (map == null) return;
             int[] data = writeArrayToTable(map);
             mapToImage("images/output.bmp", width, height, data);
+            if (info.getText().contains("Reittiä ei löytynyt")) return;
             info.setText("Valmis!");
         } catch (Exception e) {
             info.setText("Error: " + e.getMessage());

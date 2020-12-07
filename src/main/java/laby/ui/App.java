@@ -21,12 +21,17 @@ import javafx.scene.layout.HBox;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -34,10 +39,13 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.input.ZoomEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javax.imageio.ImageIO;
 import laby.logic.ImageHandler;
@@ -54,6 +62,7 @@ public class App extends Application {
     GraphicsContext piirturi;
     PixelReader reader;
     Image sourceImg;
+    int thickness;
     int width;
     int height;
     WritableImage outputImg;
@@ -108,6 +117,8 @@ public class App extends Application {
         ih = new ImageHandler(filepath, info);
         orginalPixs = ih.getImageAsMap();
         drawedPixs = new int[orginalPixs.length][orginalPixs[0].length];
+        canvas.setHeight(height);
+        canvas.setWidth(width);
         formatArray();
         drawBackground();
         
@@ -122,12 +133,21 @@ public class App extends Application {
     @Override
     public void start(Stage stage){
         stage.setTitle("Laby");
-        
+
         TextField filepath = new TextField("images/greg4.bmp");
         Button load = new Button("Lataa kuva");
         Button seek = new Button("Etsi reitti");
         Button reset = new Button("Nollaa");
+        Slider zoom = new Slider(0.25, 2.0, 0.75);
+        Slider thick = new Slider(-1501000,-69536,-856619);
+        thick.setSnapToTicks(true);
+        thick.setShowTickMarks(true);
+        thick.setMinorTickCount(1);
+        thick.setMajorTickUnit(1000000);
+        Label zoomLabel = new Label("Zoom");
+        Label thickLabel = new Label("Seinien vahvuus (- <-> +)");
         info = new Label("---");
+        thickness = -856619;
         
         // Radio buttons for tool choise:
         toolSet = new ToggleGroup();
@@ -142,9 +162,10 @@ public class App extends Application {
         wall.setToggleGroup(toolSet);
         wall.setId("wall");
         
-        load(filepath.getText());
-
         canvas = new Canvas(width, height);
+        canvas.setScaleX(0.75);
+        canvas.setScaleY(0.75);
+        load(filepath.getText());     
         piirturi = canvas.getGraphicsContext2D();
 
         canvas.setOnMouseClicked((MouseEvent e) -> {
@@ -162,20 +183,27 @@ public class App extends Application {
             imgWriter.setColor(x, y, color);
             drawedPixs[y][x] = arrayColor(color);
         });
-
         
         BorderPane asettelu = new BorderPane();
         ScrollPane scroll = new ScrollPane();
         scroll.setMinSize(800, 1000);
-        scroll.setScaleX(0.75);
-        scroll.setScaleY(0.75);
         scroll.setContent(canvas);
         asettelu.setCenter(scroll);
         
+        HBox topic = new HBox();
+        Label welcome = new Label("Laby Labyrintti");
+        welcome.setTextAlignment(TextAlignment.CENTER);
+        welcome.setTextFill(Color.GREEN);
+        welcome.setAlignment(Pos.CENTER);
+        topic.setPadding(new Insets(40,40,40,40));
+        topic.setAlignment(Pos.CENTER);
+        topic.getChildren().add(welcome);
         VBox napit = new VBox();
         napit.setSpacing(20);
-        napit.getChildren().addAll(filepath, load, start, goal, wall,seek, reset, info);
+        napit.setPadding(new Insets(20,20,20,20));
+        napit.getChildren().addAll(filepath, load, start, goal, wall,seek, reset, zoomLabel, zoom, thickLabel, thick, info);
         asettelu.setRight(napit);
+        asettelu.setTop(topic);
 
         Scene nakyma = new Scene(asettelu);
         stage.setScene(nakyma);
@@ -187,15 +215,27 @@ public class App extends Application {
         
         reset.setOnAction(event -> {
             scroll.setContent(canvas);
+            thick.setValue(-856619);
             load(filepath.getText());
         });
         
         seek.setOnAction(event -> {
-            ih.doFile(drawedPixs);
+            ih.doFile(drawedPixs, thickness);
+            zoom.setValue(0.75);
             if (info.getText().equals("Ei löydetty alku- ja loppupisteitä")) return;
             Image readyImg = new Image("file:images/output.bmp");
             ImageView iw = new ImageView(readyImg);
             scroll.setContent(iw);
+        });
+
+        zoom.setOnMouseDragged((MouseEvent e) -> {
+            canvas.setScaleX(zoom.getValue());
+            canvas.setScaleY(zoom.getValue());
+        });
+        
+        thick.setOnMouseDragged((MouseEvent e) -> {
+            thickness = (int) thick.getValue();
+            System.out.println("thick " + thickness);
         });
 
         stage.show();

@@ -21,14 +21,16 @@ public class PathFinder {
     int limit = -856619;
     Label info;
     
-    public PathFinder(int[][] map, Label info) {
+    public PathFinder(int[][] map, Label info, int thickness) {
         this.map = map;
         this.height = map.length;
         this.width = map[0].length;
         this.info = info;
+        this.limit = thickness;
     }
     
     public int[][] getMapWithPath() {
+        System.out.println("Etsitään reittiä vahvuudella " + limit);
         Pair[] fromto = findAB();
         if (fromto[0] == null || fromto[1] == null) {
             info.setText("Ei löydetty alku- ja loppupisteitä");
@@ -38,7 +40,7 @@ public class PathFinder {
         System.out.println("MAALI: " + fromto[1]);
         int routeLength = seekShortest(fromto[0], fromto[1]);
         info.setText("Lyhin reitti on: " + routeLength + " pikseliä.");
-        if (routeLength == 0) info.setText("Reittiä löytynyt. \nKokeile muuttaa seinien läpäisevyyttä \ntai merkitse pisteet uudelleen.");
+        if (routeLength == 0) info.setText("Reittiä ei löytynyt. \nKokeile muuttaa seinien läpäisevyyttä \ntai merkitse pisteet uudelleen.");
         
         return map;
     }
