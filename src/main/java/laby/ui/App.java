@@ -47,8 +47,20 @@ import laby.logic.ImageHandler;
  * @author sakorpi
  */
 public class App extends Application {
+    ToggleGroup toolSet;
     int[][] orginalPixs;
     int[][] drawedPixs;
+    Label info;
+    GraphicsContext piirturi;
+    PixelReader reader;
+    Image sourceImg;
+    int width;
+    int height;
+    WritableImage outputImg;
+    PixelWriter imgWriter;
+    ImageHandler ih;
+    Canvas canvas;
+    
 
     private Color selectedColor(ToggleGroup group) {
         RadioButton selected = (RadioButton) group.getSelectedToggle();
@@ -72,25 +84,53 @@ public class App extends Application {
             return -1;
         }
     }
+
+    private void drawBackground() {
+        int y = 0;
+        while (y < height) {
+            int x = 0;
+            while (x < width) {
+                Color vari = reader.getColor(x, y);
+                imgWriter.setColor(x, y, vari);
+                x++;
+            }
+            y++;
+        }
+    }
+    
+    private void load(String filepath) {
+        sourceImg = new Image("file:"+filepath);
+        reader = sourceImg.getPixelReader();
+        width = (int) sourceImg.getWidth();
+        height = (int) sourceImg.getHeight();
+        outputImg = new WritableImage(width, height);
+        imgWriter = outputImg.getPixelWriter();
+        ih = new ImageHandler(filepath, info);
+        orginalPixs = ih.getImageAsMap();
+        drawedPixs = new int[orginalPixs.length][orginalPixs[0].length];
+        formatArray();
+        drawBackground();
+        
+        new AnimationTimer() {
+            @Override
+            public void handle(long currentNanoTime) {
+                piirturi.drawImage(outputImg, 0, 0, canvas.getWidth(), canvas.getHeight());
+            }
+        }.start();
+    }
     
     @Override
     public void start(Stage stage){
         stage.setTitle("Laby");
         
         TextField filepath = new TextField("images/greg4.bmp");
+        Button load = new Button("Lataa kuva");
         Button seek = new Button("Etsi reitti");
         Button reset = new Button("Nollaa");
-        Label info = new Label("---");
-        
-        Image sourceImg = new Image("file:"+filepath.getText());
-        PixelReader reader = sourceImg.getPixelReader();
-        int width = (int) sourceImg.getWidth();
-        int height = (int) sourceImg.getHeight();
-        WritableImage outputImg = new WritableImage(width, height);
-        PixelWriter imgWriter = outputImg.getPixelWriter();
+        info = new Label("---");
         
         // Radio buttons for tool choise:
-        final ToggleGroup toolSet = new ToggleGroup();
+        toolSet = new ToggleGroup();
         RadioButton start = new RadioButton("Lisää lähtö");
         start.setToggleGroup(toolSet);
         start.setId("start");
@@ -102,15 +142,10 @@ public class App extends Application {
         wall.setToggleGroup(toolSet);
         wall.setId("wall");
         
-        
-        ImageHandler ih = new ImageHandler(filepath.getText(), info);
-        orginalPixs = ih.getImageAsMap();
-        drawedPixs = new int[orginalPixs.length][orginalPixs[0].length];
-        formatArray();
-        Canvas canvas = new Canvas(width, height);
-        //root.getChildren().add(canvas);
+        load(filepath.getText());
 
-        GraphicsContext piirturi = canvas.getGraphicsContext2D();
+        canvas = new Canvas(width, height);
+        piirturi = canvas.getGraphicsContext2D();
 
         canvas.setOnMouseClicked((MouseEvent e) -> {
             int y = (int) e.getY();
@@ -127,24 +162,7 @@ public class App extends Application {
             imgWriter.setColor(x, y, color);
             drawedPixs[y][x] = arrayColor(color);
         });
-  
-        // piirretään kohdekuva
-        int y = 0;
-        while (y < height) {
-            int x = 0;
-            while (x < width) {
-                Color vari = reader.getColor(x, y);
-                imgWriter.setColor(x, y, vari);
-                x++;
-            }
-            y++;
-        }
-        
-        new AnimationTimer() {
-            public void handle(long currentNanoTime) {
-                piirturi.drawImage(outputImg, 0, 0, canvas.getWidth(), canvas.getHeight());
-            }
-        }.start();
+
         
         BorderPane asettelu = new BorderPane();
         ScrollPane scroll = new ScrollPane();
@@ -156,28 +174,25 @@ public class App extends Application {
         
         VBox napit = new VBox();
         napit.setSpacing(20);
-        napit.getChildren().addAll(filepath, start, goal, wall,seek, reset, info);
+        napit.getChildren().addAll(filepath, load, start, goal, wall,seek, reset, info);
         asettelu.setRight(napit);
 
         Scene nakyma = new Scene(asettelu);
         stage.setScene(nakyma);
         
+        load.setOnAction(event -> {
+            scroll.setContent(canvas);
+            load(filepath.getText());
+        });
+        
         reset.setOnAction(event -> {
-            formatArray();
-            int yy = 0;
-            while (yy < height) {
-                int x = 0;
-                while (x < width) {
-                    Color vari = reader.getColor(x, yy);
-                    imgWriter.setColor(x, yy, vari);
-                    x++;
-                }
-                yy++;
-            }
+            scroll.setContent(canvas);
+            load(filepath.getText());
         });
         
         seek.setOnAction(event -> {
             ih.doFile(drawedPixs);
+            if (info.getText().equals("Ei löydetty alku- ja loppupisteitä")) return;
             Image readyImg = new Image("file:images/output.bmp");
             ImageView iw = new ImageView(readyImg);
             scroll.setContent(iw);

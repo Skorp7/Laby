@@ -1,5 +1,6 @@
 plugins {
-    id 'org.openjfx.javafxplugin' version '0.0.8'
+    id 'org.openjfx.javafxplugin' version '0.0.9'
+    id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
 apply plugin: 'java'
@@ -7,7 +8,10 @@ apply plugin: 'application'
 
 jar {
     manifest {
-        attributes 'Main-Class': 'laby/ui/Main'
+        attributes 'Main-Class': 'laby.ui.Main'
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 
@@ -18,7 +22,7 @@ application {
 }
 
 javafx {
-    version = '11'
+    version = '15.0.1'
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
@@ -28,6 +32,7 @@ run {
 
 repositories {
     jcenter()
+    mavenCentral()
 }
 
 dependencies {
