@@ -37,5 +37,15 @@ repositories {
 
 dependencies {
     testImplementation group: 'junit', name: 'junit', version: '4.13'
+    compile group: 'com.helger', name: 'ph-css', version: '6.2.3'
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs = ["src/main/java"]
+            includes = ["**/*.css"]
+        }
+    }
 }
 

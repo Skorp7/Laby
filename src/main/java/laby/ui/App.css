@@ -1,0 +1,66 @@
+.root {
+    -fx-focus-color:  #b6ff7b;
+    -fx-outer-border: lightgrey;
+    -fx-inner-border: lightgrey;
+    -fx-body-color: white;
+    -fx-cell-focus-inner-border:  #b6ff7b;
+    -fx-selection-bar:  derive(-fx-focus-color, 50%); 
+}
+
+
+.text-input:focused {
+    -fx-highlight-fill: derive(grey, 40%);
+    -fx-highlight-text-fill: white;
+}
+
+.check-box:focused > .box {
+    -fx-background-color: -fx-focus-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+    -fx-background-insets: -1.4, 0, 1, 2;
+    -fx-background-radius: 3.4, 2, 1, 1;
+}
+
+.welcometext {
+    -fx-effect: dropshadow( three-pass-box , #b6ff7b , 5, 0.0 , 0 , 1 );
+}
+
+.button:hover{
+    -fx-effect: dropshadow( three-pass-box , #b6ff7b, 5, 0.0 , 0 , 1 );
+}
+.button:focused {
+    -fx-effect:innershadow( three-pass-box , rgba(0,0,0,0.2) , 2, 0.0 , 0 , 1 );
+}
+
+
+.button {
+    -fx-background-color: 
+        linear-gradient(#f2f2f2, #d6d6d6),
+        linear-gradient(#fcfcfc 0%, #d9d9d9 20%, #d6d6d6 100%),
+        linear-gradient(#dddddd 0%, #f6f6f6 50%);
+    -fx-background-radius: 8,7,6;
+    -fx-background-insets: 0,1,2;
+    -fx-text-fill: black;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}
+
+.radio-button:selected > .radio > .dot {
+    -fx-background-color: lightgrey, #383838;
+    -fx-background-insets: 0 0 -1 0, 0;
+}
+
+.radio-button:focused > .radio {
+    -fx-background-color: -fx-focus-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+    -fx-background-radius: 1.0em;
+    -fx-background-insets: -1.4, 0, 1, 2;
+}
+.text-field:focused {
+    -fx-background-color: -fx-focus-color, -fx-text-box-border, -fx-control-inner-background;
+    -fx-background-insets: -0.4, 1, 2;
+    -fx-background-radius: 3.4, 2, 2;
+    -fx-prompt-text-fill: transparent;
+}
+
+.slider:focused > .thumb {
+    -fx-background-color: -fx-focus-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+    -fx-background-radius: 1.0em;
+    -fx-background-insets: -1.4, 0, 1, 2;
+}

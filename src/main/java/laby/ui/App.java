@@ -45,6 +45,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javax.imageio.ImageIO;
@@ -69,6 +70,8 @@ public class App extends Application {
     PixelWriter imgWriter;
     ImageHandler ih;
     Canvas canvas;
+    ImageView iw;
+    boolean done;
     
 
     private Color selectedColor(ToggleGroup group) {
@@ -108,6 +111,7 @@ public class App extends Application {
     }
     
     private void load(String filepath) {
+        done = false;
         sourceImg = new Image("file:"+filepath);
         reader = sourceImg.getPixelReader();
         width = (int) sourceImg.getWidth();
@@ -134,11 +138,11 @@ public class App extends Application {
     public void start(Stage stage){
         stage.setTitle("Laby");
 
-        TextField filepath = new TextField("images/empty.bmp");
+        TextField filepath = new TextField("images/default.bmp");
         Button load = new Button("Lataa kuva");
         Button seek = new Button("Etsi reitti");
         Button reset = new Button("Nollaa");
-        Slider zoom = new Slider(0.25, 2.0, 0.75);
+        Slider zoom = new Slider(0.20, 2.0, 0.75);
         Slider thick = new Slider(-1501000,-69536,-856619);
         thick.setSnapToTicks(true);
         thick.setShowTickMarks(true);
@@ -200,7 +204,9 @@ public class App extends Application {
         
         BorderPane asettelu = new BorderPane();
         ScrollPane scroll = new ScrollPane();
-        scroll.setMinSize(800, 1000);
+        scroll.setFitToHeight(true);
+        scroll.setFitToWidth(true);
+        scroll.autosize();
         scroll.setContent(canvas);
         asettelu.setCenter(scroll);
         
@@ -209,6 +215,8 @@ public class App extends Application {
         welcome.setTextAlignment(TextAlignment.CENTER);
         welcome.setTextFill(Color.GREEN);
         welcome.setAlignment(Pos.CENTER);
+        welcome.setFont(Font.font("Monospace", 20));
+        welcome.getStyleClass().add("welcometext");
         topic.setPadding(new Insets(40,40,40,40));
         topic.setAlignment(Pos.CENTER);
         topic.getChildren().add(welcome);
@@ -220,6 +228,7 @@ public class App extends Application {
         asettelu.setTop(topic);
 
         Scene nakyma = new Scene(asettelu);
+        nakyma.getStylesheets().add("laby/ui/App.css");
         stage.setScene(nakyma);
         
         load.setOnAction(event -> {
@@ -233,18 +242,27 @@ public class App extends Application {
             load(filepath.getText());
         });
         
+
         seek.setOnAction(event -> {
             ih.doFile(drawedPixs, thickness);
             zoom.setValue(0.75);
             if (info.getText().equals("Ei löydetty alku- ja loppupisteitä")) return;
             Image readyImg = new Image("file:images/output.bmp");
-            ImageView iw = new ImageView(readyImg);
+            iw = new ImageView(readyImg);
+            iw.setScaleX(0.75);
+            iw.setScaleY(0.75);
             scroll.setContent(iw);
+            done = true;            
         });
 
         zoom.setOnMouseDragged((MouseEvent e) -> {
-            canvas.setScaleX(zoom.getValue());
-            canvas.setScaleY(zoom.getValue());
+            if (done) {
+                iw.setScaleX(zoom.getValue());
+                iw.setScaleY(zoom.getValue());
+            } else {
+                canvas.setScaleX(zoom.getValue());
+                canvas.setScaleY(zoom.getValue());
+            }
         });
         
         thick.setOnMouseDragged((MouseEvent e) -> {

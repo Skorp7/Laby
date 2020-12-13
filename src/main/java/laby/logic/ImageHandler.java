@@ -54,7 +54,7 @@ public class ImageHandler {
             int[] data = writeArrayToTable(map);
             mapToImage("images/output.bmp", width, height, data);
             if (info.getText().contains("Reittiä ei löytynyt")) return;
-            info.setText("Valmis!");
+            info.setText("Valmis! Jos haluat reitin talteen,\nkopioi kuva images/output.bmp");
         } catch (Exception e) {
             info.setText("Error: " + e.getMessage());
         }
