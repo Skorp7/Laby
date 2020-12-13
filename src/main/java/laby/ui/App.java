@@ -110,9 +110,11 @@ public class App extends Application {
         }
     }
     
-    private void load(String filepath) {
+    private boolean load(String filepath) {
         done = false;
         sourceImg = new Image("file:"+filepath);
+        File dir = new File(filepath);
+        if (!dir.exists()) return false;
         reader = sourceImg.getPixelReader();
         width = (int) sourceImg.getWidth();
         height = (int) sourceImg.getHeight();
@@ -132,6 +134,7 @@ public class App extends Application {
                 piirturi.drawImage(outputImg, 0, 0, canvas.getWidth(), canvas.getHeight());
             }
         }.start();
+        return true;
     }
     
     @Override
@@ -227,19 +230,22 @@ public class App extends Application {
         asettelu.setRight(napit);
         asettelu.setTop(topic);
 
-        Scene nakyma = new Scene(asettelu);
+        Scene nakyma = new Scene(asettelu,1400,1000);
         nakyma.getStylesheets().add("laby/ui/App.css");
         stage.setScene(nakyma);
         
         load.setOnAction(event -> {
             scroll.setContent(canvas);
-            load(filepath.getText());
+            if (!load(filepath.getText())) {
+                info.setText("Lataus epäonnistui.");
+            }
         });
         
         reset.setOnAction(event -> {
             scroll.setContent(canvas);
             thick.setValue(-856619);
             load(filepath.getText());
+            info.setText("");
         });
         
 

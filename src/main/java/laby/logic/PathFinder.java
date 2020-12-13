@@ -38,7 +38,7 @@ public class PathFinder {
         System.out.println("LÄHTÖ: " + fromto[0]);
         System.out.println("MAALI: " + fromto[1]);
         int routeLength = seekShortest(fromto[0], fromto[1]);
-        info.setText("Lyhin reitti on: " + routeLength + " pikseliä.");
+        System.out.println("Lyhin reitti on: " + routeLength + " pikseliä.");
         if (routeLength == 0) info.setText("Reittiä ei löytynyt. \nKokeile muuttaa seinien läpäisevyyttä \ntai merkitse pisteet uudelleen.");
         
         return map;
