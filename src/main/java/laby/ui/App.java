@@ -1,37 +1,20 @@
 package laby.ui;
-import javax.swing.*; 
-import java.awt.image.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileWriter;
-import java.sql.ResultSetMetaData;
-import java.util.Arrays;
-import java.util.logging.Logger;
-import javafx.stage.Stage;
-import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.Control;
 import javafx.scene.layout.HBox;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -39,16 +22,12 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
-import javafx.scene.input.ZoomEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import javax.imageio.ImageIO;
 import laby.logic.ImageHandler;
 
 /**
@@ -112,9 +91,9 @@ public class App extends Application {
     
     private boolean load(String filepath) {
         done = false;
-        sourceImg = new Image("file:"+filepath);
         File dir = new File(filepath);
         if (!dir.exists()) return false;
+        sourceImg = new Image("file:"+filepath);
         reader = sourceImg.getPixelReader();
         width = (int) sourceImg.getWidth();
         height = (int) sourceImg.getHeight();

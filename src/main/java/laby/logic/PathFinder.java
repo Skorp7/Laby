@@ -68,7 +68,7 @@ public class PathFinder {
         que.addLast(first);
         visited[from.y][from.x] = true;
         dist[from.y][from.x] = 0;
-
+        System.out.println("Etsitään reittiä ..");
         while (!que.isEmpty()) {
             ArrayDeque<Pair> path = que.pollFirst();
             Pair coord = path.peekLast();
