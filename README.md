@@ -2,6 +2,8 @@
 
 Sovellus etsii mustavalkoisista labyrinttikuvista reitin lähdöstä maaliin valkoisia alueita pitkin.
 
+Tämä on testiprojekti reitinhakualgoritmien soveltamiseen käytännössä.
+
 <img src="/documentation/aloitusnakyma.png" height=600 title="Aloitusnäkymä">
 
 
